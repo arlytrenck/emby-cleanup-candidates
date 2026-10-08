@@ -1,25 +1,90 @@
 <div is="emby-scroller" class="view flex flex-direction-column scrollFrameY flex-grow" data-horizontal="false" data-forcescrollbar="true" data-centerfocus="true" data-bindheader="true" data-controller="__plugin/cleanupcandidatesjs" data-title="Cleanup Candidates">
     <div class="scrollSlider flex-grow flex-direction-column padded-left padded-left-page padded-right padded-top-page padded-bottom-page">
+
         <div class="verticalSection">
             <h2 class="sectionTitle">Cleanup Candidates</h2>
-            <div class="fieldDescription">Read-only. Lists folders nobody has played within the window. Nothing is deleted.</div>
+            <div class="fieldDescription">
+                Finds movies and series that nobody has played in a long time. A folder is listed when it was added before
+                the cutoff and no user has played any item in it since. The report only reads; deleting is a separate step at the bottom.
+            </div>
         </div>
+
         <form class="cfgForm verticalSection">
+            <h3 class="sectionTitle">Settings</h3>
             <div class="inputContainer">
                 <input is="emby-input" type="number" class="txtMonths" label="Months without a play" min="1" />
+                <div class="fieldDescription">Anything added or played within this many months is left out. The default is 24.</div>
             </div>
             <div class="inputContainer">
-                <textarea is="emby-textarea" class="txtExcluded" label="Excluded libraries (one per line)" rows="3"></textarea>
+                <label class="inputLabel" for="txtExcluded">Excluded libraries</label>
+                <textarea is="emby-textarea" id="txtExcluded" class="txtExcluded" rows="3"></textarea>
+                <div class="fieldDescription">One library name per line, spelled as Emby shows it, for example <code>Music</code>. Those libraries are skipped.</div>
             </div>
             <div class="inputContainer">
-                <textarea is="emby-textarea" class="txtKept" label="Kept folders (one full path per line)" rows="4"></textarea>
+                <label class="inputLabel" for="txtKept">Kept folders</label>
+                <textarea is="emby-textarea" id="txtKept" class="txtKept" rows="4"></textarea>
+                <div class="fieldDescription">One full path per line, for example <code>/media/tv-shows/Stargate SG-1 (1997)</code>. Kept folders never show up in the report.</div>
             </div>
-            <button is="emby-button" type="submit" class="raised button-submit block"><span>Save</span></button>
+            <button is="emby-button" type="submit" class="raised button-submit block"><span>Save settings</span></button>
+            <button is="emby-button" type="button" class="raised block btnReset"><span>Reset settings to defaults</span></button>
+            <div class="fieldDescription">Reset puts months, excluded libraries and kept folders back to their defaults. No media is touched.</div>
         </form>
+
         <div class="verticalSection">
+            <h3 class="sectionTitle">Report</h3>
             <button is="emby-button" type="button" class="raised block btnRun"><span>Run report</span></button>
-            <button is="emby-button" type="button" class="raised block btnCsv"><span>Show as CSV</span></button>
-            <pre class="preOut" style="overflow:auto;max-height:30em;white-space:pre-wrap"></pre>
+            <div class="fieldDescription divStatus">Not run yet. A large library takes 10 to 30 seconds, and up to a minute in the browser.</div>
+            <div class="divSummary" style="margin:1em 0;font-weight:500"></div>
+
+            <div class="divFilters hide" style="display:flex;flex-wrap:wrap;gap:1em">
+                <div class="inputContainer" style="flex:2 1 14em">
+                    <input is="emby-input" type="text" class="txtFilter" label="Filter by name or path" />
+                </div>
+                <div class="selectContainer" style="flex:1 1 10em">
+                    <label class="inputLabel" for="selLibrary">Library</label>
+                    <select is="emby-select" id="selLibrary" class="selLibrary"><option value="">All libraries</option></select>
+                </div>
+                <div class="selectContainer" style="flex:1 1 10em">
+                    <label class="inputLabel" for="selPlayed">Play history</label>
+                    <select is="emby-select" id="selPlayed" class="selPlayed">
+                        <option value="">Any</option>
+                        <option value="never">Never played</option>
+                        <option value="played">Played before the cutoff</option>
+                    </select>
+                </div>
+                <div class="selectContainer" style="flex:1 1 8em">
+                    <label class="inputLabel" for="selLimit">Rows</label>
+                    <select is="emby-select" id="selLimit" class="selLimit">
+                        <option value="50">50</option><option value="100" selected>100</option>
+                        <option value="250">250</option><option value="0">All</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="fieldDescription divHint hide">Click a column heading to sort. Click a row to see its folder path and each user's play count and last play date.</div>
+            <div style="overflow-x:auto">
+                <table class="tblReport" style="width:100%;border-collapse:collapse;display:none"></table>
+            </div>
+            <button is="emby-button" type="button" class="raised block btnCsv hide"><span>Download CSV of the filtered rows</span></button>
+
+            <div class="divPurge verticalSection hide">
+                <h3 class="sectionTitle">Purge selected folders</h3>
+                <div class="fieldDescription">
+                    Purge deletes folders from disk. There is no undo and no recycle bin.<br />
+                    Tick rows above. <b>Dry run</b> lists what would be deleted and changes nothing.
+                    <b>Delete</b> removes each ticked folder and everything inside it, then queues a library scan.
+                    The server scans again first and refuses any folder that is no longer a candidate, so a dry run takes as long as a report.
+                </div>
+                <div class="divSelCount" style="margin:.8em 0;font-weight:500">Nothing selected.</div>
+                <button is="emby-button" type="button" class="raised block btnSelectShown"><span>Select all shown rows</span></button>
+                <button is="emby-button" type="button" class="raised block btnClearSel"><span>Clear selection</span></button>
+                <button is="emby-button" type="button" class="raised block btnDryRun"><span>Dry run on selection</span></button>
+                <div class="inputContainer">
+                    <input is="emby-input" type="text" class="txtConfirm" label="Type DELETE (capitals) to enable the delete button" />
+                </div>
+                <button is="emby-button" type="button" class="raised block btnDelete" disabled><span>Delete selected folders permanently</span></button>
+                <pre class="preResults" style="overflow:auto;max-height:24em;white-space:pre-wrap"></pre>
+            </div>
         </div>
     </div>
 </div>

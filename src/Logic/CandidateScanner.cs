@@ -8,6 +8,14 @@ namespace EmbyCleanupCandidates.Logic
     {
         public string User { get; set; }
         public DateTime? LastPlayedUtc { get; set; }
+        public int PlayCount { get; set; }
+    }
+
+    public class UserPlay
+    {
+        public string User { get; set; }
+        public DateTime? LastPlayedUtc { get; set; }
+        public int PlayCount { get; set; }
     }
 
     public class MediaFile
@@ -31,6 +39,8 @@ namespace EmbyCleanupCandidates.Logic
         public DateTime AddedUtc { get; set; }
         public DateTime? LastPlayedUtc { get; set; }
         public string LastPlayedBy { get; set; }
+        public int TotalPlays { get; set; }
+        public List<UserPlay> Users { get; set; } = new List<UserPlay>();
     }
 
     public static class CandidateScanner
@@ -69,7 +79,19 @@ namespace EmbyCleanupCandidates.Logic
                     Items = g.Sum(f => f.Items),
                     AddedUtc = added,
                     LastPlayedUtc = latest?.LastPlayedUtc,
-                    LastPlayedBy = latest?.User
+                    LastPlayedBy = latest?.User,
+                    TotalPlays = g.SelectMany(f => f.Plays).Sum(p => p.PlayCount),
+                    Users = g.SelectMany(f => f.Plays)
+                        .GroupBy(p => p.User)
+                        .Select(u => new UserPlay
+                        {
+                            User = u.Key,
+                            LastPlayedUtc = u.Max(p => p.LastPlayedUtc),
+                            PlayCount = u.Sum(p => p.PlayCount)
+                        })
+                        .Where(u => u.PlayCount > 0 || u.LastPlayedUtc.HasValue)
+                        .OrderByDescending(u => u.LastPlayedUtc)
+                        .ToList()
                 });
             }
             return result.OrderByDescending(c => c.SizeBytes).ToList();

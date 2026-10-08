@@ -40,4 +40,14 @@ public class ScannerTests
         Assert.Empty(CandidateScanner.Scan(files, Cutoff, new HashSet<string> { "movies" }, None));
         Assert.Equal("b", Assert.Single(CandidateScanner.Scan(files, Cutoff, None, new HashSet<string> { "a" })).Folder);
     }
+
+    [Fact] public void ReportsPerUserPlaysAndTotals()
+    {
+        var f = F("a", Cutoff.AddYears(-3));
+        f.Plays.Add(new PlayRecord { User = "x", LastPlayedUtc = Cutoff.AddYears(-1), PlayCount = 2 });
+        f.Plays.Add(new PlayRecord { User = "y", LastPlayedUtc = null, PlayCount = 0 });
+        var c = Assert.Single(CandidateScanner.Scan(new[] { f }, Cutoff, None, None));
+        Assert.Equal(2, c.TotalPlays);
+        Assert.Equal("x", Assert.Single(c.Users).User);
+    }
 }
