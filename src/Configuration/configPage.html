@@ -1,0 +1,25 @@
+<div is="emby-scroller" class="view flex flex-direction-column scrollFrameY flex-grow" data-horizontal="false" data-forcescrollbar="true" data-centerfocus="true" data-bindheader="true" data-controller="__plugin/cleanupcandidatesjs" data-title="Cleanup Candidates">
+    <div class="scrollSlider flex-grow flex-direction-column padded-left padded-left-page padded-right padded-top-page padded-bottom-page">
+        <div class="verticalSection">
+            <h2 class="sectionTitle">Cleanup Candidates</h2>
+            <div class="fieldDescription">Read-only. Lists folders nobody has played within the window. Nothing is deleted.</div>
+        </div>
+        <form class="cfgForm verticalSection">
+            <div class="inputContainer">
+                <input is="emby-input" type="number" class="txtMonths" label="Months without a play" min="1" />
+            </div>
+            <div class="inputContainer">
+                <textarea is="emby-textarea" class="txtExcluded" label="Excluded libraries (one per line)" rows="3"></textarea>
+            </div>
+            <div class="inputContainer">
+                <textarea is="emby-textarea" class="txtKept" label="Kept folders (one full path per line)" rows="4"></textarea>
+            </div>
+            <button is="emby-button" type="submit" class="raised button-submit block"><span>Save</span></button>
+        </form>
+        <div class="verticalSection">
+            <button is="emby-button" type="button" class="raised block btnRun"><span>Run report</span></button>
+            <button is="emby-button" type="button" class="raised block btnCsv"><span>Show as CSV</span></button>
+            <pre class="preOut" style="overflow:auto;max-height:30em;white-space:pre-wrap"></pre>
+        </div>
+    </div>
+</div>

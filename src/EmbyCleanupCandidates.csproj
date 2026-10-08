@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <AssemblyName>EmbyCleanupCandidates</AssemblyName>
+    <RootNamespace>EmbyCleanupCandidates</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="System.Memory" Version="4.6.0" />
+    <PackageReference Include="MediaBrowser.Server.Core" Version="4.9.1.90" />
+    <EmbeddedResource Include="Configuration\configPage.html" />
+    <EmbeddedResource Include="Configuration\configPage.js" />
+    <EmbeddedResource Include="thumb.png" />
+    <EmbeddedResource Include="strings\en-US.json" />
+  </ItemGroup>
+</Project>
