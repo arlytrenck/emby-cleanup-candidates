@@ -34,7 +34,7 @@ Tick rows in the report, then pick one:
 
 Before it deletes anything, the server runs the scan again and accepts only folders that are still candidates. It skips kept folders, excluded libraries, recently played or added folders, and symlinks. That repeat scan makes a dry run take as long as a report.
 
-The Emby container needs write access to the media mount. If the mount is read-only, each folder comes back as `failed` with the error. A real delete has not been run yet; every test so far was a dry run.
+The Emby container needs write access to the media mount. If the mount is read-only, as it is on the server this was built on, each folder comes back as `failed` with the error and nothing is deleted. A real delete has not been run; every test so far was a dry run.
 
 ## API
 
